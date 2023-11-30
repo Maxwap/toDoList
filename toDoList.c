@@ -12,11 +12,13 @@ long dateEpoch() {
     time_t timestamp = time(NULL); // Récupère le timestamp actuel
     return timestamp;
 }
+
 //fonction qui arrondit la date actuelle au jour inférieur
 long roundDownToDay(long (*dateEpoch)()) {
     long timestamp = dateEpoch(); // Récupère le timestamp actuel
     return timestamp - (timestamp % 86400); // Arrondit au multiple de 86400 inférieur
 }
+
 //fonction qui met à jour le statut d'une tâche
 void updateTaskStatus(Task *task, const char *newStatus) {
     // Utilisation de strcpy pour copier la nouvelle chaîne de caractères dans task->status
@@ -124,6 +126,7 @@ void updateAndRemoveTasks(List *todolist) {
         }
     }
 }
+
 //fonction qui compte les taches en cours
 int countTasksEnCours(List *todolist) {
     Task *current = todolist->head;
@@ -137,3 +140,56 @@ int countTasksEnCours(List *todolist) {
     return count;
 }
 
+//fonction qui prend en parametre countTaskEnCours et qui change le status des taches en attente a encours tant que count est inférieur a 5
+void updateTasksEnAttente(List *todolist, int count) {
+    Task *current = todolist->head;
+    while (current != NULL && count < 5) {
+        if (strcmp(current->status, "En attente") == 0) {
+            updateTaskStatus(current, "En cours");
+            count++;
+        }
+        current = current->next;
+    }
+}
+
+//fonction menu qui permet : d'ajouter des taches, de les afficher, de les mettre a jour et de quitter
+void menu(List *todolist) {
+    int choice = 0;
+    int count = 0;
+    int n=0;
+    while (choice != 4) {
+        printf("******** MENU *******\n");
+        printf("1. Add a task\n");
+        printf("2. Display the list\n");
+        printf("3. Quit\n");
+        printf("**********************\n");
+        printf("Your choice: ");
+        scanf("%d", &choice);
+
+        switch (choice) {
+            case 1:
+                printf("How many tasks do you want to add? ");
+                scanf("%d", &n);
+
+                while (n>0){
+                    addTask(todolist,askTask());
+                    n--;
+                }
+
+                updateAndRemoveTasks(todolist);
+                count = countTasksEnCours(todolist);
+                updateTasksEnAttente(todolist, count);
+
+                break;
+            case 2:
+                displayList(todolist);
+                break;
+            case 3:
+                printf("Goodbye!\n");
+                break;
+            default:
+                printf("Invalid choice.\n");
+                break;
+        }
+    }
+}

@@ -5,24 +5,13 @@
 #ifndef TP_TODOLIST_H
 #define TP_TODOLIST_H
 
-//Une liste de tâches contient des tâches où chaque tâche est définie par :
-//- Son nom
-//- Sa date de création
-//- Son statut : En attente, En cours ou Terminée
-//- Un nombre de jours nécessaires pour la terminer
-typedef struct date {
-    int year;
-    int month;
-    int day;
-}Date;
-
-    typedef struct task {
-        char name[50];
-        long date;
-        char status[10];
-        int days;
-        struct task *next;
-    }Task;
+typedef struct task {
+    char name[50];
+    long date;
+    char status[10];
+    int days;
+    struct task *next;
+}Task;
 
 typedef struct list {
     Task *head;
@@ -52,5 +41,7 @@ void updateAndRemoveTasks(List *todolist);
 int countTasksEnCours(List *todolist);
 
 void displayList(List * );
+
+void menu(List *todolist);
 
 #endif //TP_TODOLIST_H
