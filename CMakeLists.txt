@@ -3,4 +3,5 @@ project(TP C)
 
 set(CMAKE_C_STANDARD 11)
 
-add_executable(TP main.c toDoList.c toDoList.h)
+add_executable(TP main.c toDoList.c toDoList.h
+        )
