@@ -1,7 +1,8 @@
 cmake_minimum_required(VERSION 3.26)
-project(TP C)
+project(untitled1 C)
 
 set(CMAKE_C_STANDARD 11)
 
-add_executable(TP main.c toDoList.c toDoList.h
-        )
+add_executable(untitled1 main.c
+        list.h
+        list.c)
