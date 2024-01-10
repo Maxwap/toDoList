@@ -22,7 +22,7 @@ Task *askTask() {
     scanf("%s", task->name);
 
     task->date = dateCreation();
-    printf("Date de creation: %s", ctime(&(task->date))); // Affichez la date pour vérification
+    //printf("Date de creation: %s", ctime(&(task->date))); // Affichez la date pour vérification
     updateStatus(task, "En attente");
 
     printf("Entrer le nombre de jours pour la realiser: ");
@@ -190,7 +190,17 @@ void menu(List *todolist) {
         printf("2. Afficher la liste\n");
         printf("3. Quitter\n");
         printf("Votre choix: ");
-        scanf("%d", &choice);
+
+        // Vérification du choix du menu
+        while (1) {
+            if (scanf("%d", &choice) != 1 || (choice < 1 || choice > 3)) {
+                printf("Saisie incorrecte, veuillez saisir 1, 2 ou 3.\n");
+                printf("Votre choix: ");
+                while (getchar() != '\n'); // Nettoyage du buffer d'entrée
+            } else {
+                break;
+            }
+        }
 
         if (choice == 1) {
             Task *newTask = askTask();
