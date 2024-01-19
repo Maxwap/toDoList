@@ -104,7 +104,7 @@ void updateTasks(List *todolist) {
         currentTask = currentTask->next;
     }
 }
-
+*/
 //fonction qui supprime les taches terminees
 void deleteTasks(List *todolist) {
     Task *currentTask = todolist->head;
@@ -125,7 +125,7 @@ void deleteTasks(List *todolist) {
         }
     }
 }
-*/
+
 //fonction qui change le statuts des taches de "en attente" à "en cours" si tant qu'il y a moins de 5 taches en cours
 void updateTasksEnCours(List *todolist) {
     Task *currentTask = todolist->head;
