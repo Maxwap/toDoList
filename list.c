@@ -24,11 +24,12 @@ Task *askTask() {
 
     printf("Entrer le nombre de jours pour la realiser: ");
     scanf("%d", &task->days);
-
+    //fonction e vérification de saisie
     while (task->days < 1) {
         printf("Le nombre de jours doit etre superieur a 1. Recommencez: ");
         scanf("%d", &task->days);
     }
+
     return task;
 }
 
@@ -62,14 +63,14 @@ long dateTodayMidnight() {
 }
 
 void printTask(Task *task) {
-    printf("**************\n");
+    printf("*****************************************\n");
     printf("Nom de la tache: %s\n", task->name);
 
     struct tm *timeinfo = localtime(&(task->date));
     printf("Date de creation: %d/%d/%d\n", timeinfo->tm_mday, timeinfo->tm_mon + 1, timeinfo->tm_year + 1900);
     printf("Statut: %s\n", task->status);
     printf("Nombre de jours pour la realiser: %d\n", task->days);
-    printf("**************\n");
+    printf("*****************************************\n");
 
 }
 
@@ -87,20 +88,15 @@ void updateTasks(List *todolist) {
     Task *currentTask = todolist->head;
 
     while (currentTask != NULL) {
-        // Calcul de la différence de jours entre la date actuelle et la date de création de la tâche
+        if (strcmp(currentTask->status, "En_cours") == 0) {
+            // Calcul de la différence de jours entre la date actuelle et la date de création de la tâche
+            int diffDays = difftime(dateTodayMidnight(), currentTask->date) / (60 * 60 * 24);
+            currentTask->days = currentTask->days - diffDays;
 
-        int diffDays = difftime(dateTodayMidnight(), currentTask->date) / (60 * 60 * 24);
-        //afficher la date qui se trouve dans currentTask->date
-        //printf("Date de creation de la tache %s : %s", currentTask->name, ctime(&(currentTask->date)));
-        //printf("diffDays = %d\n", diffDays);
-        //printf("Nombre de jours restants avant pour la tache %s : %d\n", currentTask->name, currentTask->days);
-        currentTask->days = currentTask->days - diffDays;
-        //printf("Nombre de jours restants pour la tache %s : %d\n", currentTask->name, currentTask->days);
-
-
-        // Mise à jour du nombre de jours restants
-        if (currentTask->days < 0) {
-            updateStatus(currentTask, "Termine");
+            // Mise à jour du nombre de jours restants
+            if (currentTask->days < 0) {
+                updateStatus(currentTask, "Terminee");
+            }
         }
         currentTask = currentTask->next;
     }
@@ -112,7 +108,7 @@ void deleteTasks(List *todolist) {
     Task *previousTask = NULL;
 
     while (currentTask != NULL) {
-        if (strcmp(currentTask->status, "Termine") == 0) {
+        if (strcmp(currentTask->status, "Terminee") == 0) {
             if (previousTask == NULL) {
                 todolist->head = currentTask->next;
             } else {
@@ -148,6 +144,7 @@ void updateTasksEnCours(List *todolist) {
 }
 
 void menu(List *todolist) {
+    updateTasksEnCours(todolist);
     int choice = 0;
     while (choice != 3) {
         printf("**********MENU**********\n");
@@ -172,8 +169,6 @@ void menu(List *todolist) {
             addTask(todolist, newTask);
             updateTasks(todolist);
             //deleteTasks(todolist);
-            //manageTasks(todolist);
-            updateTasksEnCours(todolist);
 
         } else if (choice == 2) {
             printList(todolist);
