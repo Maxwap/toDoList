@@ -2,7 +2,6 @@
 
 List *createList() {
     List *todolist = malloc(sizeof(List));
-    //test si l'allocation a reussi
     if (todolist == NULL) {
         printf("Erreur d'allocation de memoire\n");
         exit(1);
@@ -13,20 +12,19 @@ List *createList() {
 
 Task *askTask() {
     Task *task = (Task *)malloc(sizeof(Task));
-    //test si l'allocation a reussi
     if (task == NULL) {
         printf("Erreur d'allocation de memoire\n");
         exit(1);
     }
     printf("Entrer le nom de la tache: ");
     scanf("%s", task->name);
+    task->date = dateTodayMidnight();
 
-    task->date = dateCreation();
-    //printf("Date de creation: %s", ctime(&(task->date))); // Affichez la date pour vérification
-    updateStatus(task, "En attente");
+    updateStatus(task, "En_attente");
 
     printf("Entrer le nombre de jours pour la realiser: ");
     scanf("%d", &task->days);
+
     while (task->days < 1) {
         printf("Le nombre de jours doit etre superieur a 1. Recommencez: ");
         scanf("%d", &task->days);
@@ -47,12 +45,11 @@ void addTask(List *todolist, Task *newTask) {
     newTask->next = NULL;
 }
 
-
 void updateStatus(Task *task, const char *newStatus) {
     strcpy(task->status, newStatus);
 }
 
-long dateCreation() {
+long dateTodayMidnight() {
     time_t timestamp = time(NULL);
     struct tm *timeinfo = localtime(&timestamp);
 
@@ -67,7 +64,9 @@ long dateCreation() {
 void printTask(Task *task) {
     printf("**************\n");
     printf("Nom de la tache: %s\n", task->name);
-    printf("Date de creation: %s", ctime((const time_t *)&(task->date)));
+
+    struct tm *timeinfo = localtime(&(task->date));
+    printf("Date de creation: %d/%d/%d\n", timeinfo->tm_mday, timeinfo->tm_mon + 1, timeinfo->tm_year + 1900);
     printf("Statut: %s\n", task->status);
     printf("Nombre de jours pour la realiser: %d\n", task->days);
     printf("**************\n");
@@ -82,29 +81,31 @@ void printList(List *todolist) {
         currentTask = currentTask->next;
     }
 }
-/*
-// Fonction pour mettre à jour les tâches en fonction de la date actuelle
+
+// Fonction pour mettre à jour les tâches en fonction de la date actuelle pOUR LES EN COURS
 void updateTasks(List *todolist) {
-    time_t currentTime = time(NULL);
     Task *currentTask = todolist->head;
 
     while (currentTask != NULL) {
         // Calcul de la différence de jours entre la date actuelle et la date de création de la tâche
-        int diffDays = difftime(currentTime, currentTask->date) / (60 * 60 * 24);
+
+        int diffDays = difftime(dateTodayMidnight(), currentTask->date) / (60 * 60 * 24);
+        //afficher la date qui se trouve dans currentTask->date
+        //printf("Date de creation de la tache %s : %s", currentTask->name, ctime(&(currentTask->date)));
+        //printf("diffDays = %d\n", diffDays);
+        //printf("Nombre de jours restants avant pour la tache %s : %d\n", currentTask->name, currentTask->days);
+        currentTask->days = currentTask->days - diffDays;
+        //printf("Nombre de jours restants pour la tache %s : %d\n", currentTask->name, currentTask->days);
+
 
         // Mise à jour du nombre de jours restants
-        if (diffDays > 0) {
-            currentTask->days -= diffDays;
-
-            // Si le nombre de jours restants est égal à 1, mettre le statut à "Terminé"
-            if (currentTask->days == 1) {
-                updateStatus(currentTask, "Termine");
-            }
+        if (currentTask->days < 0) {
+            updateStatus(currentTask, "Termine");
         }
         currentTask = currentTask->next;
     }
 }
-*/
+
 //fonction qui supprime les taches terminees
 void deleteTasks(List *todolist) {
     Task *currentTask = todolist->head;
@@ -131,53 +132,17 @@ void updateTasksEnCours(List *todolist) {
     Task *currentTask = todolist->head;
     int count = 0;
     while (currentTask != NULL) {
-        if (strcmp(currentTask->status, "En cours") == 0) {
+        if (strcmp(currentTask->status, "En_cours") == 0) {
             count++;
         }
         currentTask = currentTask->next;
     }
     currentTask = todolist->head;
     while (currentTask != NULL) {
-        if (strcmp(currentTask->status, "En attente") == 0 && count < 5) {
-            updateStatus(currentTask, "En cours");
+        if (strcmp(currentTask->status, "En_attente") == 0 && count < 5) {
+            updateStatus(currentTask, "En_cours");
             count++;
         }
-        currentTask = currentTask->next;
-    }
-}
-
-void manageTasks(List *todolist) {
-    time_t currentTime = time(NULL);
-    Task *currentTask = todolist->head;
-    Task *previousTask = NULL;
-
-    while (currentTask != NULL) {
-        int diffDays = difftime(currentTime, currentTask->date) / (60 * 60 * 24);
-
-        if (diffDays > 0) {
-            currentTask->days -= diffDays;
-
-            if (currentTask->days == 1) {
-                updateStatus(currentTask, "Termine");
-            }
-        }
-
-        if (strcmp(currentTask->status, "Termine") == 0) {
-            if (previousTask == NULL) {
-                todolist->head = currentTask->next;
-                free(currentTask);
-                currentTask = todolist->head;
-                continue;
-            } else {
-                Task *temp = currentTask;
-                currentTask = currentTask->next;
-                free(temp);
-                previousTask->next = currentTask;
-                continue;
-            }
-        }
-
-        previousTask = currentTask;
         currentTask = currentTask->next;
     }
 }
@@ -205,15 +170,93 @@ void menu(List *todolist) {
         if (choice == 1) {
             Task *newTask = askTask();
             addTask(todolist, newTask);
-            //updateTasks(todolist);
+            updateTasks(todolist);
             //deleteTasks(todolist);
-            manageTasks(todolist);
+            //manageTasks(todolist);
             updateTasksEnCours(todolist);
 
         } else if (choice == 2) {
             printList(todolist);
         } else if (choice != 3) {
-            printf("Choix invalide\n");
+            //sortir du programme
+            exit(0);
+
         }
     }
+}
+
+void writeTaskToFile(FILE *file, Task *task) {
+    // Écris chaque champ de la tâche dans le fichier
+    fprintf(file, "%s %ld %s %d\n", task->name, task->date, task->status, task->days);
+}
+void writeTasksToFile(List *todolist, const char *filename) {
+    FILE *file = fopen(filename, "w");
+    if (file == NULL) {
+        printf("Erreur lors de l'ouverture du fichier %s.\n", filename);
+        return;
+    }
+
+    Task *currentTask = todolist->head;
+    while (currentTask != NULL) {
+        writeTaskToFile(file, currentTask);
+        currentTask = currentTask->next;
+    }
+
+    fclose(file);
+}
+void readTasksFromFile(List *todolist, const char *filename) {
+    FILE *file = fopen(filename, "r");
+    if (file == NULL) {
+        printf("Erreur lors de l'ouverture du fichier %s.\n", filename);
+        return;
+    }
+
+    Task tempTask;
+    int count = 0;
+
+    char line[100];
+
+    while (fgets(line, sizeof(line), file) != NULL) {
+        // Initialiser tempTask.days avec une valeur par défaut
+        tempTask.days = 0;
+
+        // Utilise sscanf pour analyser les champs de la ligne
+        if (sscanf(line, "%49s %ld %9s %*[^0-9]%d", tempTask.name, &(tempTask.date), tempTask.status, &(tempTask.days)) >= 3 &&
+            strlen(tempTask.name) > 0 && tempTask.date > 0) {
+
+
+
+            Task *newTask = (Task *)malloc(sizeof(Task));
+            if (newTask == NULL) {
+                printf("Erreur d'allocation de mémoire\n");
+                exit(1);
+            }
+
+            strcpy(newTask->name, tempTask.name);
+            newTask->date = tempTask.date;
+            strcpy(newTask->status, tempTask.status);
+            newTask->days = tempTask.days;
+
+            addTask(todolist, newTask);
+
+            // Ajout de messages de débogage
+            printf("Lecture de la tache %d : Nom=%s, Date=%ld, Statut=%s, Jours=%d\n", count, newTask->name, newTask->date, newTask->status, newTask->days);
+            count++;
+        } else {
+            printf("Erreur de lecture de la ligne : %s\n", line);
+        }
+    }
+
+
+    // Ajout de messages de débogage
+    printf("Nombre total de tâches lues depuis le fichier : %d\n", count);
+
+    if (feof(file)) {
+        printf("Fin du fichier atteinte.\n");
+    } else if (ferror(file)) {
+        printf("Erreur de lecture depuis le fichier.\n");
+    }
+
+    fclose(file);
+
 }
