@@ -86,19 +86,21 @@ void printList(List *todolist) {
 // Fonction pour mettre à jour les tâches en fonction de la date actuelle pOUR LES EN COURS
 void updateTasks(List *todolist) {
     Task *currentTask = todolist->head;
+    if (dateTodayMidnight() != todolist->lastUpdate) {
+        while (currentTask != NULL) {
+            if (strcmp(currentTask->status, "En_cours") == 0) {
+                // Calcul de la différence de jours entre la date actuelle et la date de création de la tâche
+                int diffDays = difftime(dateTodayMidnight(), currentTask->date) / (60 * 60 * 24);
+                currentTask->days = currentTask->days - diffDays;
 
-    while (currentTask != NULL) {
-        if (strcmp(currentTask->status, "En_cours") == 0) {
-            // Calcul de la différence de jours entre la date actuelle et la date de création de la tâche
-            int diffDays = difftime(dateTodayMidnight(), currentTask->date) / (60 * 60 * 24);
-            currentTask->days = currentTask->days - diffDays;
-
-            // Mise à jour du nombre de jours restants
-            if (currentTask->days < 0) {
-                updateStatus(currentTask, "Terminee");
+                // Mise à jour du nombre de jours restants
+                if (currentTask->days < 0) {
+                    updateStatus(currentTask, "Terminee");
+                    todolist->lastUpdate = dateTodayMidnight();
+                }
             }
+            currentTask = currentTask->next;
         }
-        currentTask = currentTask->next;
     }
 }
 
@@ -144,7 +146,6 @@ void updateTasksEnCours(List *todolist) {
 }
 
 void menu(List *todolist) {
-    updateTasksEnCours(todolist);
     int choice = 0;
     while (choice != 3) {
         printf("**********MENU**********\n");
@@ -167,8 +168,7 @@ void menu(List *todolist) {
         if (choice == 1) {
             Task *newTask = askTask();
             addTask(todolist, newTask);
-            updateTasks(todolist);
-            //deleteTasks(todolist);
+            updateTasksEnCours(todolist);
 
         } else if (choice == 2) {
             printList(todolist);

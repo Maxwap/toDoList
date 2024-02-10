@@ -15,12 +15,11 @@ typedef struct task {
 
 typedef struct list {
     Task *head;
+    time_t lastUpdate; // Journée de la dernière mise à jour des tâches
 
 } List;
 
 struct tm;
-
-
 
 List *createList();
 Task *askTask();
