@@ -16,7 +16,6 @@ typedef struct task {
 typedef struct list {
     Task *head;
     time_t lastUpdate; // Journée de la dernière mise à jour des tâches
-
 } List;
 
 struct tm;
@@ -32,7 +31,7 @@ void menu(List *todolist);
 void updateTasks(List *todolist);
 void deleteTasks(List *todolist);
 void updateTasksEnCours(List *todolist);
-
+void printMenu();
 void writeTasksToFile(List *todolist, const char *filename);
 void writeTaskToFile(FILE *file, Task *task);
 void readTasksFromFile(List *todolist, const char *filename);

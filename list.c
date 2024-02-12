@@ -145,7 +145,7 @@ void updateTasksEnCours(List *todolist) {
     }
 }
 
-void menu(List *todolist) {
+/*void menu(List *todolist) {
     int choice = 0;
     while (choice != 3) {
         printf("**********MENU**********\n");
@@ -179,11 +179,21 @@ void menu(List *todolist) {
         }
     }
 }
+ */
+void printMenu(List *todolist) {
+    printf("**********MENU**********\n");
+    printf("1. Ajouter une tache\n");
+    printf("2. Afficher la liste\n");
+    printf("3. Quitter\n");
+    printf("Votre choix: ");
+}
 
+/*
 void writeTaskToFile(FILE *file, Task *task) {
     // Écris chaque champ de la tâche dans le fichier
     fprintf(file, "%s %ld %s %d\n", task->name, task->date, task->status, task->days);
 }
+
 void writeTasksToFile(List *todolist, const char *filename) {
     FILE *file = fopen(filename, "w");
     if (file == NULL) {
@@ -242,16 +252,9 @@ void readTasksFromFile(List *todolist, const char *filename) {
         }
     }
 
-
-    // Ajout de messages de débogage
-    printf("Nombre total de tâches lues depuis le fichier : %d\n", count);
-
-    if (feof(file)) {
-        printf("Fin du fichier atteinte.\n");
-    } else if (ferror(file)) {
-        printf("Erreur de lecture depuis le fichier.\n");
-    }
-
     fclose(file);
 
 }
+
+//fonction qui demande à l'utilisateur de saisir le nom d'une tache et qui la cherche dans la liste
+*/
