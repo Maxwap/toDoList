@@ -1,9 +1,10 @@
-#include<stdio.h>
-#include<stdlib.h>
-#include<time.h>
-#include<string.h>
-#ifndef TP_TODOLIST_H
-#define TP_TODOLIST_H
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <time.h>
+
+#ifndef UNTITLED4_LIST_H
+#define UNTITLED4_LIST_H
 
 typedef struct task {
     char name[50];
@@ -13,26 +14,14 @@ typedef struct task {
     struct task *next;
 } Task;
 
-typedef struct list {
-    Task *head;
-    time_t lastUpdate; // Journée de la dernière mise à jour des tâches
-} List;
+void askTask(Task *task);
 
-struct tm;
+void writeTask(const char *filename, Task *task);
 
-List *createList();
-Task *askTask();
-void addTask(List *todolist, Task *newTask);
-long dateTodayMidnight();
-void updateStatus(Task *task, const char *newStatus);
-void printTask(Task *task);
-void printList(List *todolist);
-void menu(List *todolist);
-void updateTasks(List *todolist);
-void deleteTasks(List *todolist);
-void updateTasksEnCours(List *todolist);
+void modifyTaskStatus(const char *filename, const char *task_name, const char *new_status);
+
+void deleteTask(const char *filename, const char *task_name);
+
 void printMenu();
-void writeTasksToFile(List *todolist, const char *filename);
-void writeTaskToFile(FILE *file, Task *task);
-void readTasksFromFile(List *todolist, const char *filename);
-#endif //TP_TODOLIST_H
+
+#endif //UNTITLED4_LIST_H

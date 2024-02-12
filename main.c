@@ -1,41 +1,50 @@
 #include "list.h"
 
-
 int main() {
     int choice;
-    List *todolist = createList();
-    //printList(todolist);
-    updateTasks(todolist);
-    deleteTasks(todolist);
-    updateTasksEnCours(todolist);
 
-    //menu(todolist);
-    do{
+    do {
         printMenu();
         scanf("%d", &choice);
         getchar(); // consume newline character
 
         switch (choice) {
             case 1: {
-                Task *newTask = askTask();
-                addTask(todolist, newTask);
-                updateTasksEnCours(todolist);
+                Task task;
+                askTask(&task);
+                writeTask("fichier.txt", &task);
                 break;
             }
             case 2: {
-                printList(todolist);
+                char task_name[50];
+                char new_status[10];
+
+                printf("Entrer le nom de la tâche à modifier: ");
+                scanf("%s", task_name);
+
+                printf("Entrer le nouveau statut: ");
+                scanf("%s", new_status);
+
+                modifyTaskStatus("fichier.txt", task_name, new_status);
                 break;
             }
             case 3: {
-                printf("Fin programme\n");
+                char task_name[50];
+
+                printf("Enter task name to delete: ");
+                scanf("%s", task_name);
+
+                deleteTask("fichier.txt", task_name);
                 break;
             }
-            default:
-                printf("Choix invalide!\n");
+            case 4:
+                printf("End\n");
                 break;
-
+            default:
+                printf("Invalid choice!\n");
+                break;
         }
-    } while (choice != 3);
+    } while (choice != 4);
 
     return 0;
 }
